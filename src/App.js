@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { ChevronLeft, User, Music, Pen } from 'lucide-react';
+import { ChevronLeft, User, Music, Pen, Crown } from 'lucide-react';
 import './App.css'
 import PageBuilder from './components/PageBuilder';
+import PremiumPlansModal from './components/PremiumPlansModal';
 
 const templates = [
   { id: 'producer', name: 'Producer Template', icon: Music },
@@ -12,9 +13,15 @@ const templates = [
 function App() {
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [isPremium, setIsPremium] = useState(false);
+  const [showPremiumModal, setShowPremiumModal] = useState(false);
 
   const handleBackToTemplates = () => {
     setSelectedTemplate(null);
+  };
+
+  const handleSubscribe = () => {
+    setIsPremium(true);
+    setShowPremiumModal(false);
   };
 
   return (
@@ -38,7 +45,7 @@ function App() {
             </div>
             <div className="flex items-center justify-end lg:w-0 lg:flex-1">
               <button
-                onClick={() => setIsPremium(!isPremium)}
+                onClick={() => setShowPremiumModal(true)}
                 className={`mr-4 px-4 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all duration-200 ${
                   isPremium
                     ? 'bg-yellow-500 text-white hover:bg-yellow-600'
@@ -62,10 +69,10 @@ function App() {
             {templates.map((template) => (
               <div
                 key={template.id}
-                className="template-button relative w-full h-80 rounded-lg shadow-md cursor-pointer hover:shadow-xl transition-all duration-300 overflow-hidden p-1" // Added p-1 for padding
+                className="template-button relative w-full h-80 rounded-lg shadow-md cursor-pointer hover:shadow-xl transition-all duration-300 overflow-hidden p-1"
                 onClick={() => setSelectedTemplate(template.id)}
               >
-                <div className="relative flex flex-col items-center justify-center h-full bg-white rounded-lg"> {/* Added bg-white and rounded-lg */}
+                <div className="relative flex flex-col items-center justify-center h-full bg-white rounded-lg">
                   {React.createElement(template.icon, { size: 64, className: "mb-6 text-purple-600" })}
                   <p className="text-2xl font-semibold text-gray-800">{template.name}</p>
                 </div>
@@ -79,6 +86,12 @@ function App() {
           </div>
         )}
       </main>
+      {showPremiumModal && (
+        <PremiumPlansModal 
+          onClose={() => setShowPremiumModal(false)}
+          onSubscribe={handleSubscribe}
+        />
+      )}
     </div>
   );
 }
