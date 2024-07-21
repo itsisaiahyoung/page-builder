@@ -46,7 +46,7 @@ export const TitleElement = ({ onRemove, onEdit, content, isPreview, align }) =>
 
 export const ParagraphElement = ({ onRemove, onEdit, content, isPreview, align }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [text, setText] = useState(content || 'Sample paragraph text goes here.');
+  const [text, setText] = useState(content || 'Paragraph text goes here.');
 
   const paragraphContent = <p className={`${align === 'left' ? 'text-left' : align === 'right' ? 'text-right' : 'text-center'}`}>{text}</p>;
 
