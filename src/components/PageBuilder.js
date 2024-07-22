@@ -3,7 +3,7 @@ import { DragDropContext } from 'react-beautiful-dnd';
 import { Eye, Code } from 'lucide-react';
 import ElementList from './ElementList';
 import PreviewArea from './PreviewArea';
-import { StructureElementTypes, createNewElement } from './elementTypes';
+import { ElementTypes, StructureElementTypes, PremiumElementTypes, createNewElement } from './elementTypes';
 import ExportModal from './ExportModal';
 
 const PageBuilder = ({ templateId, isPremium }) => {
@@ -12,119 +12,175 @@ const PageBuilder = ({ templateId, isPremium }) => {
   const [showExportModal, setShowExportModal] = useState(false);
 
   useEffect(() => {
-    console.log('Elements updated:', elements);
+    console.log('Elements updated:', JSON.stringify(elements, null, 2));
   }, [elements]);
 
   const onDragEnd = (result) => {
+    console.log('Drag ended. Result:', result);
     const { source, destination, draggableId } = result;
 
-    if (!destination) return;
+    if (!destination) {
+      console.log('No destination. Drag cancelled.');
+      return;
+    }
 
     const newElements = Array.from(elements);
+    console.log('Current elements:', JSON.stringify(newElements, null, 2));
+
+    // Helper function to find a column element and its content
+    const findColumnAndContent = (columnId, columnIndex) => {
+      const columnElementIndex = newElements.findIndex(el => el.id === columnId);
+      if (columnElementIndex !== -1) {
+        const columnElement = newElements[columnElementIndex];
+        const columnContent = columnElement.columnContent[parseInt(columnIndex)] || [];
+        console.log(`Found column ${columnId} at index ${columnElementIndex}. Content:`, columnContent);
+        return { columnElement, columnContent, columnElementIndex };
+      }
+      console.log(`Column ${columnId} not found.`);
+      return null;
+    };
+
+    // Helper function to parse column ID and index from droppable ID
+    const parseColumnInfo = (droppableId) => {
+      const parts = droppableId.split('-');
+      return {
+        columnId: parts.slice(1, -1).join('-'),
+        columnIndex: parts[parts.length - 1]
+      };
+    };
 
     // Dragging from element list to preview area or column
     if (source.droppableId === 'elements' || source.droppableId === 'structure-elements' || source.droppableId === 'premium-elements') {
+      console.log(`Creating new element of type ${draggableId}`);
       const newElement = createNewElement(draggableId);
+      console.log('New element created:', newElement);
       
       if (destination.droppableId === 'preview') {
+        console.log(`Adding new element to preview area at index ${destination.index}`);
         newElements.splice(destination.index, 0, newElement);
       } else if (destination.droppableId.startsWith('column-')) {
-        const [columnId, columnIndex] = destination.droppableId.split('-').slice(1);
-        const columnElementIndex = newElements.findIndex(el => el.id === columnId);
-        if (columnElementIndex !== -1) {
-          const columnElement = newElements[columnElementIndex];
-          if (!columnElement.columnContent[parseInt(columnIndex)]) {
-            columnElement.columnContent[parseInt(columnIndex)] = [];
-          }
-          columnElement.columnContent[parseInt(columnIndex)].splice(destination.index, 0, newElement);
+        const { columnId, columnIndex } = parseColumnInfo(destination.droppableId);
+        console.log(`Adding new element to column ${columnId} at index ${columnIndex}`);
+        const columnData = findColumnAndContent(columnId, columnIndex);
+        if (columnData) {
+          columnData.columnContent.splice(destination.index, 0, newElement);
+          columnData.columnElement.columnContent[parseInt(columnIndex)] = columnData.columnContent;
+          console.log('Updated column content:', columnData.columnContent);
+        } else {
+          console.error(`Failed to find column ${columnId}`);
         }
       }
     } 
     // Reordering within preview area
     else if (source.droppableId === 'preview' && destination.droppableId === 'preview') {
+      console.log(`Reordering element within preview area from index ${source.index} to ${destination.index}`);
       const [reorderedItem] = newElements.splice(source.index, 1);
       newElements.splice(destination.index, 0, reorderedItem);
     } 
     // Moving between columns or within the same column
     else if (source.droppableId.startsWith('column-') && destination.droppableId.startsWith('column-')) {
-      const [sourceColumnId, sourceColumnIndex] = source.droppableId.split('-').slice(1);
-      const [destColumnId, destColumnIndex] = destination.droppableId.split('-').slice(1);
+      const sourceInfo = parseColumnInfo(source.droppableId);
+      const destInfo = parseColumnInfo(destination.droppableId);
       
-      const sourceColumnElementIndex = newElements.findIndex(el => el.id === sourceColumnId);
-      const destColumnElementIndex = newElements.findIndex(el => el.id === destColumnId);
+      console.log(`Moving element from column ${sourceInfo.columnId}:${sourceInfo.columnIndex} to ${destInfo.columnId}:${destInfo.columnIndex}`);
       
-      if (sourceColumnElementIndex !== -1 && destColumnElementIndex !== -1) {
-        const sourceColumnElement = newElements[sourceColumnElementIndex];
-        const destColumnElement = newElements[destColumnElementIndex];
-        const [movedItem] = sourceColumnElement.columnContent[parseInt(sourceColumnIndex)].splice(source.index, 1);
-        if (!destColumnElement.columnContent[parseInt(destColumnIndex)]) {
-          destColumnElement.columnContent[parseInt(destColumnIndex)] = [];
-        }
-        destColumnElement.columnContent[parseInt(destColumnIndex)].splice(destination.index, 0, movedItem);
+      const sourceColumnData = findColumnAndContent(sourceInfo.columnId, sourceInfo.columnIndex);
+      const destColumnData = findColumnAndContent(destInfo.columnId, destInfo.columnIndex);
+      
+      if (sourceColumnData && destColumnData) {
+        const [movedItem] = sourceColumnData.columnContent.splice(source.index, 1);
+        console.log('Moved item:', movedItem);
+        destColumnData.columnContent.splice(destination.index, 0, movedItem);
+        
+        sourceColumnData.columnElement.columnContent[parseInt(sourceInfo.columnIndex)] = sourceColumnData.columnContent;
+        destColumnData.columnElement.columnContent[parseInt(destInfo.columnIndex)] = destColumnData.columnContent;
+        
+        console.log('Updated source column content:', sourceColumnData.columnContent);
+        console.log('Updated destination column content:', destColumnData.columnContent);
+      } else {
+        console.error('Failed to find source or destination column');
       }
     } 
     // Moving from preview area to column
     else if (source.droppableId === 'preview' && destination.droppableId.startsWith('column-')) {
-      const [columnId, columnIndex] = destination.droppableId.split('-').slice(1);
-      const columnElementIndex = newElements.findIndex(el => el.id === columnId);
-      const [movedItem] = newElements.splice(source.index, 1);
+      const { columnId, columnIndex } = parseColumnInfo(destination.droppableId);
+      console.log(`Moving element from preview area to column ${columnId}:${columnIndex}`);
       
-      if (columnElementIndex !== -1) {
-        const columnElement = newElements[columnElementIndex];
-        if (!columnElement.columnContent[parseInt(columnIndex)]) {
-          columnElement.columnContent[parseInt(columnIndex)] = [];
-        }
-        columnElement.columnContent[parseInt(columnIndex)].splice(destination.index, 0, movedItem);
+      const [movedItem] = newElements.splice(source.index, 1);
+      console.log('Moved item:', movedItem);
+      
+      const columnData = findColumnAndContent(columnId, columnIndex);
+      if (columnData) {
+        columnData.columnContent.splice(destination.index, 0, movedItem);
+        columnData.columnElement.columnContent[parseInt(columnIndex)] = columnData.columnContent;
+        console.log('Updated column content:', columnData.columnContent);
+      } else {
+        console.error(`Failed to find column ${columnId}`);
       }
     } 
     // Moving from column to preview area
     else if (source.droppableId.startsWith('column-') && destination.droppableId === 'preview') {
-      const [sourceColumnId, sourceColumnIndex] = source.droppableId.split('-').slice(1);
-      const sourceColumnElementIndex = newElements.findIndex(el => el.id === sourceColumnId);
+      const { columnId, columnIndex } = parseColumnInfo(source.droppableId);
+      console.log(`Moving element from column ${columnId}:${columnIndex} to preview area`);
       
-      if (sourceColumnElementIndex !== -1) {
-        const sourceColumnElement = newElements[sourceColumnElementIndex];
-        const [movedItem] = sourceColumnElement.columnContent[parseInt(sourceColumnIndex)].splice(source.index, 1);
+      const sourceColumnData = findColumnAndContent(columnId, columnIndex);
+      
+      if (sourceColumnData) {
+        const [movedItem] = sourceColumnData.columnContent.splice(source.index, 1);
+        console.log('Moved item:', movedItem);
         newElements.splice(destination.index, 0, movedItem);
+        sourceColumnData.columnElement.columnContent[parseInt(columnIndex)] = sourceColumnData.columnContent;
+        console.log('Updated source column content:', sourceColumnData.columnContent);
+      } else {
+        console.error(`Failed to find column ${columnId}`);
       }
     }
 
-    // After updating newElements
-    console.log('Elements after update:', newElements);
+    console.log('Final elements state:', JSON.stringify(newElements, null, 2));
     setElements(newElements);
   };
 
   const removeElement = (id) => {
+    console.log(`Removing element with id ${id}`);
     setElements(prevElements => {
-      return prevElements.reduce((acc, element) => {
+      const newElements = prevElements.reduce((acc, element) => {
         if (element.id === id) {
+          console.log(`Found element to remove: ${element.type}`);
           return acc;
         }
         if (element.type === StructureElementTypes.COLUMN) {
           const updatedColumnContent = element.columnContent.map(column => 
             column.filter(item => item.id !== id)
           );
+          console.log(`Updated column content after removal:`, updatedColumnContent);
           return [...acc, { ...element, columnContent: updatedColumnContent }];
         }
         return [...acc, element];
       }, []);
+      console.log('Elements after removal:', JSON.stringify(newElements, null, 2));
+      return newElements;
     });
   };
 
   const updateElement = (id, updates) => {
+    console.log(`Updating element with id ${id}:`, updates);
     setElements(prevElements => {
-      return prevElements.map(element => {
+      const newElements = prevElements.map(element => {
         if (element.id === id) {
+          console.log(`Updating element: ${element.type}`);
           return { ...element, ...updates };
         }
         if (element.type === StructureElementTypes.COLUMN) {
           const updatedColumnContent = element.columnContent.map(column =>
             column.map(item => item.id === id ? { ...item, ...updates } : item)
           );
+          console.log(`Updated column content after update:`, updatedColumnContent);
           return { ...element, columnContent: updatedColumnContent };
         }
         return element;
       });
+      console.log('Elements after update:', JSON.stringify(newElements, null, 2));
+      return newElements;
     });
   };
 
