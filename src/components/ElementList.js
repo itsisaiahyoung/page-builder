@@ -6,9 +6,9 @@ import { ElementTypes, StructureElementTypes, PremiumElementTypes } from './elem
 
 const ElementList = ({ isPremium }) => {
   return (
-    <div className="w-64 bg-white shadow-md p-4 overflow-y-auto">
-      <h3 className="text-lg font-semibold mb-4 flex items-center">
-        <Grid size={20} className="mr-2 text-indigo-600" />
+    <div className="w-64 bg-slate-800 shadow-md p-4 overflow-y-auto">
+      <h3 className="text-lg font-semibold mb-4 flex items-center text-slate-200">
+        <Grid size={20} className="mr-2 text-indigo-400" />
         Elements
       </h3>
       <Droppable droppableId="elements" isDropDisabled={true}>
@@ -28,8 +28,8 @@ const ElementList = ({ isPremium }) => {
           </div>
         )}
       </Droppable>
-      <h3 className="text-lg font-semibold my-4 flex items-center">
-        <Layout size={20} className="mr-2 text-green-600" />
+      <h3 className="text-lg font-semibold my-4 flex items-center text-slate-200">
+        <Layout size={20} className="mr-2 text-indigo-400" />
         Structure
       </h3>
       <Droppable droppableId="structure-elements" isDropDisabled={true}>
@@ -49,8 +49,8 @@ const ElementList = ({ isPremium }) => {
           </div>
         )}
       </Droppable>
-      <h3 className="text-lg font-semibold my-4 flex items-center">
-        <Crown size={20} className="mr-2 text-orange-500" />
+      <h3 className="text-lg font-semibold my-4 flex items-center text-slate-200">
+        <Crown size={20} className="mr-2 text-yellow-400" />
         Premium Elements
       </h3>
       <Droppable droppableId="premium-elements" isDropDisabled={!isPremium}>

@@ -17,16 +17,16 @@ const DraggableElement = ({ type, element, index, isPreview, removeElement, upda
             ref={provided.innerRef}
             {...provided.draggableProps}
             {...provided.dragHandleProps}
-            className={`flex items-center p-2 bg-white rounded border ${
-              snapshot.isDragging ? 'shadow-lg border-indigo-500' : 'shadow border-gray-200'
+            className={`flex items-center p-2 bg-slate-700 rounded border ${
+              snapshot.isDragging ? 'shadow-lg border-indigo-500' : 'shadow border-slate-600'
             } hover:shadow-md transition-all duration-200 select-none ${isPremiumElement && !isPremium ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             {React.createElement(ElementIcons[type], { 
               size: 20, 
-              className: `mr-2 ${isPremiumElement ? 'text-orange-500' : isStructureElement ? 'text-green-600' : 'text-indigo-600'}` 
+              className: `mr-2 ${isPremiumElement ? 'text-yellow-400' : isStructureElement ? 'text-indigo-400' : 'text-slate-200'}` 
             })}
-            {type.charAt(0).toUpperCase() + type.slice(1)}
-            {isPremiumElement && !isPremium && <Lock size={16} className="ml-2 text-orange-500" />}
+            <span className="text-slate-200">{type.charAt(0).toUpperCase() + type.slice(1)}</span>
+            {isPremiumElement && !isPremium && <Lock size={16} className="ml-2 text-yellow-400" />}
           </div>
         )}
       </Draggable>
@@ -59,7 +59,7 @@ const DraggableElement = ({ type, element, index, isPreview, removeElement, upda
                 <button
                   key={align}
                   onClick={() => changeAlignment(align)}
-                  className={`p-1 transition-all duration-200 hover:scale-110 ${element.align === align ? 'text-purple-600' : 'text-gray-400'}`}
+                  className={`p-1 transition-all duration-200 hover:scale-110 ${element.align === align ? 'text-indigo-400' : 'text-slate-400'}`}
                 >
                   {align === 'left' && <AlignLeft size={16} />}
                   {align === 'center' && <AlignCenter size={16} />}

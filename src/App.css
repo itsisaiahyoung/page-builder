@@ -7,17 +7,17 @@
 .template-button::after {
   content: '';
   position: absolute;
-  inset: -4px; /* Increased from -2px to -4px */
+  inset: -4px;
   z-index: -1;
-  border-radius: 0.75rem; /* Slightly increased to account for larger border */
+  border-radius: 0.75rem;
   background: linear-gradient(45deg, #a855f7, #6366f1, #3b82f6, #a855f7);
-  background-size: 300% 300%; /* Reduced from 400% to make animation more noticeable */
+  background-size: 300% 300%;
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
 }
 
 .template-button::before {
-  filter: blur(8px); /* Increased blur for a softer edge */
+  filter: blur(8px);
 }
 
 .template-button:hover::before,
@@ -49,4 +49,30 @@
   100% {
     background-position: 0% 50%;
   }
+}
+
+/* New styles for text animation */
+@keyframes text-slide {
+  0%, 16% {
+    transform: translateY(0%);
+  }
+  20%, 36% {
+    transform: translateY(-16.66%);
+  }
+  40%, 56% {
+    transform: translateY(-33.33%);
+  }
+  60%, 76% {
+    transform: translateY(-50%);
+  }
+  80%, 96% {
+    transform: translateY(-66.66%);
+  }
+  100% {
+    transform: translateY(-83.33%);
+  }
+}
+
+.animate-text-slide {
+  animation: text-slide 12s cubic-bezier(0.83, 0, 0.17, 1) infinite;
 }

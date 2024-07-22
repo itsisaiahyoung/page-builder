@@ -130,19 +130,19 @@ const PageBuilder = ({ templateId, isPremium }) => {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="bg-white shadow-md p-4 flex justify-between items-center">
-        <h2 className="text-xl font-bold">Page Builder ({templateId} template)</h2>
+      <div className="bg-slate-800 shadow-md p-4 flex justify-between items-center">
+        <h2 className="text-xl font-bold text-slate-200">{templateId} Template</h2>
         <div className="flex space-x-2">
           <button
             onClick={() => setIsPreview(!isPreview)}
-            className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors duration-200 flex items-center"
+            className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors duration-200 flex items-center"
           >
             <Eye className="mr-2" size={20} />
             {isPreview ? 'Edit' : 'Preview'}
           </button>
           <button
             onClick={() => setShowExportModal(true)}
-            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors duration-200 flex items-center"
+            className="px-4 py-2 bg-slate-600 text-white rounded-md hover:bg-slate-700 transition-colors duration-200 flex items-center"
           >
             <Code className="mr-2" size={20} />
             Export
