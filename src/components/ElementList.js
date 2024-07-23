@@ -2,7 +2,7 @@ import React from 'react';
 import { Droppable } from 'react-beautiful-dnd';
 import { Grid, Layout, Crown } from 'lucide-react';
 import DraggableElement from './DraggableElement';
-import { ElementTypes, StructureElementTypes, PremiumElementTypes } from './elementTypes';
+import { ElementTypes, StructureElementTypes, PremiumElementTypes } from '../utils/elementTypes';
 
 const ElementList = ({ isPremium }) => {
   return (

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronLeft, User, Music, Pen, Crown } from 'lucide-react';
-import './App.css'
+import './styles/App.css';
 import PageBuilder from './components/PageBuilder';
 import PremiumPlansModal from './components/PremiumPlansModal';
 import TextAnimation from './components/TextAnimation';

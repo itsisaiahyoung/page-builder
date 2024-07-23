@@ -1,35 +1,22 @@
 import React from 'react';
 import { Droppable } from 'react-beautiful-dnd';
-import { StructureElementTypes } from './elementTypes';
+import { StructureElementTypes } from '../utils/elementTypes';
 import DraggableElement from './DraggableElement';
+import { ColumnElement } from './ElementComponents';
 
 const PreviewArea = ({ elements, isPreview, removeElement, updateElement }) => {
-  const renderElement = (element, index, columnId = null, columnIndex = null) => {
+  const renderElement = (element, index) => {
     if (element.type === StructureElementTypes.COLUMN) {
       return (
-        <DraggableElement
+        <ColumnElement
           key={element.id}
-          element={element}
-          index={index}
+          id={element.id}
+          columns={element.columns}
+          columnContent={element.columnContent}
+          onRemove={removeElement}
+          onEdit={updateElement}
           isPreview={isPreview}
-          removeElement={removeElement}
-          updateElement={updateElement}
-        >
-          {element.columnContent.map((column, colIndex) => (
-            <Droppable key={`${element.id}-column-${colIndex}`} droppableId={`column-${element.id}-${colIndex}`}>
-              {(provided, snapshot) => (
-                <div
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                  className={`flex-1 p-2 ${snapshot.isDraggingOver ? 'bg-blue-100' : 'bg-gray-100'}`}
-                >
-                  {column.map((item, itemIndex) => renderElement(item, itemIndex, element.id, colIndex))}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          ))}
-        </DraggableElement>
+        />
       );
     }
 
@@ -41,8 +28,6 @@ const PreviewArea = ({ elements, isPreview, removeElement, updateElement }) => {
         isPreview={isPreview}
         removeElement={removeElement}
         updateElement={updateElement}
-        columnId={columnId}
-        columnIndex={columnIndex}
       />
     );
   };

@@ -1,5 +1,5 @@
 import { Type, Square, AlignLeft, Image, Layout, FileText, Video, Columns, Maximize } from 'lucide-react';
-import { TitleElement, ParagraphElement, ButtonElement, ImageElement, ColumnElement, SpacerElement, GalleryElement, FormElement, VideoElement } from './ElementComponents';
+import { TitleElement, ParagraphElement, ButtonElement, ImageElement, ColumnElement, SpacerElement, GalleryElement, FormElement, VideoElement } from '../components/ElementComponents';
 
 export const ElementTypes = {
   TITLE: 'title',
@@ -44,24 +44,24 @@ export const ElementComponents = {
 };
 
 export const createNewElement = (type) => {
-    const baseElement = {
-      id: `${type}-${Date.now()}`,
-      type,
-    };
-  
-    switch (type) {
-      case ElementTypes.TITLE:
-        return { ...baseElement, content: 'New Title', align: 'center' };
-      case ElementTypes.BUTTON:
-        return { ...baseElement, content: 'New Button', color: 'bg-blue-500', align: 'center' };
-      case ElementTypes.PARAGRAPH:
-        return { ...baseElement, content: 'New paragraph text goes here.', align: 'center' };
-      case ElementTypes.IMAGE:
-        return { ...baseElement, content: 'https://via.placeholder.com/150', alt: 'Placeholder image', align: 'center' };
-      case StructureElementTypes.COLUMN:
-        return { ...baseElement, columns: 2, columnContent: [[], []] };
-      case StructureElementTypes.SPACER:
-        return { ...baseElement, height: 50 };
+  const baseElement = {
+    id: `${type}-${Date.now()}`,
+    type,
+  };
+
+  switch (type) {
+    case ElementTypes.TITLE:
+      return { ...baseElement, content: 'New Title', align: 'center' };
+    case ElementTypes.BUTTON:
+      return { ...baseElement, content: 'New Button', color: 'bg-blue-500', align: 'center' };
+    case ElementTypes.PARAGRAPH:
+      return { ...baseElement, content: 'New paragraph text goes here.', align: 'center' };
+    case ElementTypes.IMAGE:
+      return { ...baseElement, content: 'https://via.placeholder.com/150', alt: 'Placeholder image', align: 'center' };
+    case StructureElementTypes.COLUMN:
+      return { ...baseElement, columns: 2, columnContent: [[], []] };
+    case StructureElementTypes.SPACER:
+      return { ...baseElement, height: 50 };
       case PremiumElementTypes.GALLERY:
         return { ...baseElement, images: ['https://via.placeholder.com/150', 'https://via.placeholder.com/150', 'https://via.placeholder.com/150'] };
       case PremiumElementTypes.FORM:

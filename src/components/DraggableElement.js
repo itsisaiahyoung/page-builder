@@ -1,9 +1,17 @@
 import React from 'react';
 import { Draggable } from 'react-beautiful-dnd';
 import { Lock, AlignLeft, AlignCenter, AlignRight } from 'lucide-react';
-import { ElementIcons, ElementComponents, StructureElementTypes } from './elementTypes';
+import { ElementIcons, ElementComponents, StructureElementTypes } from '../utils/elementTypes';
 
 const DraggableElement = ({ type, element, index, isPreview, removeElement, updateElement, isPremiumElement = false, isStructureElement = false, isPremium = false, children, columnId, columnIndex }) => {
+  console.log('Rendering DraggableElement:', { 
+    type: type || element?.type, 
+    id: element?.id, 
+    index, 
+    columnId, 
+    columnIndex 
+  });
+
   const changeAlignment = (align) => {
     updateElement(element.id, { align });
   };
